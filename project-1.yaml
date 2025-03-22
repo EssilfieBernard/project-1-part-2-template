@@ -496,10 +496,10 @@ Resources:
       RequiresCompatibilities:
         - FARGATE
       ExecutionRoleArn: !Ref ECSTaskExecutionRole
-      TaskRoleArn: !Ref ECSTaskRole    # This role provides S3 full access to your app
+      TaskRoleArn: !Ref ECSTaskRole
       ContainerDefinitions:
         - Name: webapp-container
-          Image: "public.ecr.aws/g7n2o3k3/project-1:latest"  # Update with your ECR image URI
+          Image: "public.ecr.aws/g7n2o3k3/project-1:latest"
           PortMappings:
             - ContainerPort: 80
           Environment:

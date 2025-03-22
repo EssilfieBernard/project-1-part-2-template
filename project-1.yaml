@@ -46,11 +46,6 @@ Parameters:
     Type: String
     Default: dbadmin
     
-  DatabasePassword:
-    Description: The database admin password
-    Type: String
-    NoEcho: true
-    
   DatabaseInstanceClass:
     Description: The database instance type
     Type: String
@@ -326,9 +321,13 @@ Resources:
   DatabaseSecret:
     Type: AWS::SecretsManager::Secret
     Properties:
-      Name: !Sub ${Environment}/database/credentials
+      Name: !Sub "${Environment}/database/credentials"
       Description: RDS database credentials
-      SecretString: !Sub '{"username":"${DatabaseUser}","password":"${DatabasePassword}","engine":"postgres","host":"${RDSInstance.Endpoint.Address}","port":"5432","dbname":"${DatabaseName}"}'
+      GenerateSecretString:
+        SecretStringTemplate: !Sub '{"username": "${DatabaseUser}", "engine": "postgres", "dbname": "${DatabaseName}"}'
+        GenerateStringKey: "password"
+        PasswordLength: 16
+        ExcludeCharacters: '"@/\\'
       Tags:
         - Key: Environment
           Value: !Ref Environment
@@ -343,7 +342,11 @@ Resources:
       Engine: postgres
       EngineVersion: 14.4
       MasterUsername: !Ref DatabaseUser
-      MasterUserPassword: !Ref DatabasePassword
+      MasterUserPassword: !Join 
+        - ""
+        - - "{{resolve:secretsmanager:"
+          - !Ref DatabaseSecret
+          - ":SecretString:password}}"
       MultiAZ: true
       PubliclyAccessible: false
       StorageType: gp2
@@ -354,6 +357,7 @@ Resources:
         - Key: Name
           Value: !Sub ${Environment}-PostgreSQL
     DeletionPolicy: Snapshot
+
 
   # SSM Parameter Store Entries
   DBHostParameter:

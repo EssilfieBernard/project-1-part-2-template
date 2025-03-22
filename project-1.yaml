@@ -291,7 +291,7 @@ Resources:
           - !Ref DatabaseSecret
           - ":SecretString:password}}"
       MultiAZ: true
-      PubliclyAccessible: false
+      PubliclyAccessible: true
       StorageType: gp2
       DBSubnetGroupName: !Ref RDSSubnetGroup
       VPCSecurityGroups:
@@ -333,7 +333,7 @@ Resources:
       Type: String
       Value: !Ref DatabaseSecret
       Description: ARN of the database credentials in Secrets Manager
-      
+
   # Update the existing secret with the RDS host information
   UpdateDatabaseSecretWithHost:
     Type: AWS::SecretsManager::SecretTargetAttachment

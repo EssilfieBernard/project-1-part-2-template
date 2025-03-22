@@ -391,60 +391,6 @@ Resources:
       Value: !Ref DatabaseSecret
       Description: ARN of the database credentials in Secrets Manager
 
-  # S3 Bucket for Image Storage
-  ImageBucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketName: !Sub image-bucket-essilfie
-      PublicAccessBlockConfiguration:
-        BlockPublicAcls: true
-        BlockPublicPolicy: true
-        IgnorePublicAcls: true
-        RestrictPublicBuckets: true
-      VersioningConfiguration:
-        Status: Enabled
-      CorsConfiguration:
-        CorsRules:
-          - AllowedHeaders:
-              - '*'
-            AllowedMethods:
-              - GET
-              - PUT
-              - POST
-              - DELETE
-              - HEAD
-            AllowedOrigins:
-              - '*'
-            MaxAge: 3000
-    DeletionPolicy: Retain
-
-  # S3 Bucket Policy
-  ImageBucketPolicy:
-    Type: AWS::S3::BucketPolicy
-    Properties:
-      Bucket: !Ref ImageBucket
-      PolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Deny
-            Principal: '*'
-            Action: 's3:*'
-            Resource:
-              - !Sub 'arn:aws:s3:::${ImageBucket}/*'
-              - !Sub 'arn:aws:s3:::${ImageBucket}'
-            Condition:
-              Bool:
-                'aws:SecureTransport': 'false'
-
-  # S3 Bucket Parameter
-  S3BucketNameParameter:
-    Type: AWS::SSM::Parameter
-    Properties:
-      Name: !Sub /${Environment}/s3/bucketName
-      Type: String
-      Value: !Ref ImageBucket
-      Description: S3 Bucket Name for Image Storage
-
     # ECS Cluster for the containerized web app
   ECSCluster:
     Type: AWS::ECS::Cluster
@@ -704,9 +650,3 @@ Outputs:
     Value: !Ref DatabaseSecret
     Export:
       Name: !Sub ${AWS::StackName}-DatabaseSecretArn
-
-  ImageBucketName:
-    Description: Name of the S3 bucket for image storage
-    Value: !Ref ImageBucket
-    Export:
-      Name: !Sub ${AWS::StackName}-ImageBucketName

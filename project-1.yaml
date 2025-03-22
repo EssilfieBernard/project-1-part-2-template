@@ -340,7 +340,6 @@ Resources:
       AllocatedStorage: !Ref DatabaseAllocatedStorage
       DBInstanceClass: !Ref DatabaseInstanceClass
       Engine: postgres
-      EngineVersion: 14.4
       MasterUsername: !Ref DatabaseUser
       MasterUserPassword: !Join 
         - ""

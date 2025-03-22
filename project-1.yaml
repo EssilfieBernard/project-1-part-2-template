@@ -396,7 +396,7 @@ Resources:
   ImageBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub ${Environment}-image-bucket-${AWS::AccountId}
+      BucketName: !Sub image-bucket-essilfie
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: true

@@ -333,6 +333,14 @@ Resources:
       Type: String
       Value: !Ref DatabaseSecret
       Description: ARN of the database credentials in Secrets Manager
+      
+  # Update the existing secret with the RDS host information
+  UpdateDatabaseSecretWithHost:
+    Type: AWS::SecretsManager::SecretTargetAttachment
+    Properties:
+      SecretId: !Ref DatabaseSecret
+      TargetId: !Ref RDSInstance
+      TargetType: AWS::RDS::DBInstance
 
 Outputs:
   VpcId:

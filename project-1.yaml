@@ -1,18 +1,18 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: >
   VPC, Networking, RDS, and Secrets Manager for Containerized Web Application.
-  (Temporarily without ECS and S3; these will be added later)
+  (Temporarily excludes ECS, CodeDeploy, ALB, and S3 resources; to be added later.)
 
 Parameters:
   Environment:
-    Description: The deployment environment
+    Description: The deployment environment (must be all lower-case for unique resource naming)
     Type: String
     Default: production
     AllowedValues:
       - development
       - staging
       - production
-
+  
   VpcCIDR:
     Description: CIDR block for the VPC
     Type: String
@@ -37,23 +37,17 @@ Parameters:
     Description: CIDR block for Public Subnet 2
     Type: String
     Default: 10.0.4.0/24
-
+    
   DatabaseName:
     Description: The name of the initial database
     Type: String
     Default: imagemetadata
-
+    
   DatabaseUser:
     Description: The database admin username
     Type: String
     Default: dbadmin
-
-  DatabasePassword:
-    Description: The database admin password
-    Type: String
-    NoEcho: true
-    # For security, you must provide this value at stack creation
-
+    
   DatabaseInstanceClass:
     Description: The database instance type
     Type: String
@@ -63,7 +57,7 @@ Parameters:
       - db.t3.medium
       - db.t3.large
       - db.r5.large
-
+      
   DatabaseAllocatedStorage:
     Description: The size of the database (GB)
     Type: Number
@@ -240,7 +234,7 @@ Resources:
       RouteTableId: !Ref PrivateRouteTable2
       SubnetId: !Ref PrivateSubnet2
 
-  # RDS Security Group – allow PostgreSQL traffic from the VPC CIDR
+  # RDS Security Group – allow PostgreSQL traffic from within the VPC
   RDSSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -267,13 +261,17 @@ Resources:
         - Key: Name
           Value: !Sub "${Environment}-RDS-SubnetGroup"
 
-  # Secrets Manager Secret for Database Credentials
+  # Secrets Manager Secret for Database Credentials – generated automatically
   DatabaseSecret:
     Type: AWS::SecretsManager::Secret
     Properties:
       Name: !Sub "${Environment}/database/credentials"
       Description: RDS database credentials
-      SecretString: !Sub '{"username":"${DatabaseUser}","password":"${DatabasePassword}","engine":"postgres","dbname":"${DatabaseName}"}'
+      GenerateSecretString:
+        SecretStringTemplate: !Sub '{"username": "${DatabaseUser}", "engine": "postgres", "dbname": "${DatabaseName}"}'
+        GenerateStringKey: "password"
+        PasswordLength: 16
+        ExcludeCharacters: '"@/\\'
       Tags:
         - Key: Environment
           Value: !Ref Environment
@@ -304,7 +302,7 @@ Resources:
           Value: !Sub "${Environment}-PostgreSQL"
     DeletionPolicy: Snapshot
 
-  # SSM Parameter Store Entries for Database Information 
+  # SSM Parameter Store Entries for Database Information
   DBHostParameter:
     Type: AWS::SSM::Parameter
     Properties:

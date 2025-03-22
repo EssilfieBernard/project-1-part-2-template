@@ -304,7 +304,7 @@ Resources:
           Value: !Sub "${Environment}-PostgreSQL"
     DeletionPolicy: Snapshot
 
-  # SSM Parameter Store Entries for Database Information
+  # SSM Parameter Store Entries for Database Information 
   DBHostParameter:
     Type: AWS::SSM::Parameter
     Properties:

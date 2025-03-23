@@ -1,7 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: >
-  VPC, Networking, RDS, and Secrets Manager for Containerized Web Application.
-  (Temporarily excludes ECS, CodeDeploy, ALB, and S3 resources; to be added later.)
+  VPC, Networking, RDS, ALB, EC2 and Secrets Manager for Containerized Web Application.
 
 Parameters:
   Environment:

@@ -65,6 +65,11 @@ Parameters:
     MinValue: 20
     MaxValue: 1000
 
+  LatestAmazonLinux2Ami:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-ebs
+
+
 Resources:
   # VPC and Networking Resources
   VPC:
@@ -653,11 +658,6 @@ Resources:
       Tags:
         - Key: Name
           Value: !Sub "${Environment}-EC2InstanceSG"
-
-  # Dynamically fetch the latest Amazon Linux 2 AMI from SSM Parameter Store
-  LatestAmazonLinux2Ami:
-    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
-    Default: /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-ebs
 
   # The EC2 instance in the private subnet
   EC2Instance:
